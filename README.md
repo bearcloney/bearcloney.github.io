@@ -1,4 +1,4 @@
-# [bearcloney.github.io](https://bearcloney.github.io)；如有补充书签请在[Issues]([https://bearcloney.github.io](https://github.com/bearcloney/bearcloney.github.io/issues))提出谢谢分享 <br>
+# [bearcloney.github.io](https://bearcloney.github.io)；如有补充书签请在[Issues](https://github.com/bearcloney/bearcloney.github.io/issues)提出谢谢分享 <br>
 
 
 
