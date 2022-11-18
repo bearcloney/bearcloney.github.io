@@ -1,3 +1,3 @@
 # bearcloney.github.io
 
-#[链接](https://bearcloney.github.io)
+# [跳转](https://bearcloney.github.io)
