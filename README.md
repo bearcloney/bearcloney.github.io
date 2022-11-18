@@ -1,4 +1,6 @@
-# [bearcloney.github.io](https://bearcloney.github.io)`如有补充书签请在Issues提出谢谢分享` <br>
+# [bearcloney.github.io](https://bearcloney.github.io)如有补充书签请在[Issues]([https://bearcloney.github.io](https://github.com/bearcloney/bearcloney.github.io/issues))提出谢谢分享 <br>
+
+
 
 **小白找番没网站，多半是废了** <br>
 `赐予你一本魔导书，愿你尽快独当一面`
