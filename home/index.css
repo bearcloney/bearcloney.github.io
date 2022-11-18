@@ -1,0 +1,210 @@
+div#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -10;
+  background-position: center 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -o-background-size: cover;
+  zoom: 1;
+ 
+  opacity:1;
+  transition: opacity 1s linear;
+  -moz-transition: opacity 1s linear;
+  -webkit-transition: opacity 1s linear;
+  -o-transition: opacity 1s linear;
+}
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.container {
+  margin: auto;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  line-height: 1.4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-color: #f9f9f9; */
+  height: 100%;
+  /* background-image: url("preview1.jpg"); */
+  /* background-size: cover; */
+
+}
+h1{
+
+  color:#FFFFFF;/*❤标题字颜色*/
+
+}
+
+
+/*❤是背景框*/
+.card {
+  background: rgba(0, 0, 0, 0.4);/*❤颜色透明度*/
+
+  background-size: contain;
+  border-radius: 50px;/*❤圆角*/
+  box-shadow: 0 10px 30px -5px rgba(60, 60, 60, 0.4);/*❤阴影颜色透明度*/
+  text-align: center;
+  padding: 30px 60px;
+  backdrop-filter:blur(5px)/*❤模糊*/
+}
+.card img {
+  background-color: #dddfe6;
+  height: 120px;
+  width: 120px;
+  border-radius: 50%;
+  margin: auto auto 15px;
+  display: block;
+}
+.card h1 {
+  font-size: 22px;
+  margin: 10px auto 0;
+  letter-spacing: 1px;
+}
+.card h2 {
+  margin: auto;
+  color: #E7E7E7;/*❤描述H2字体颜色*/
+  font-weight: 300;
+  font-size: 14px;
+}
+
+/*######*/
+.card .button {
+  display: block;
+  text-decoration: none;
+  
+  background: rgba(0, 0, 0, 0.4);/*❤背景颜色透明度*/
+  
+  color: #f9f9f9;/*❤字*/
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  margin-top: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 200px;
+  transition: 0.2s;
+  
+}
+.card .button span {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: top;
+}
+.card .button:hover {
+  background: #3b70fc;/*❤聚焦颜色*/
+}
+/*######*/
+
+
+.card .button1 {
+  display: block;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.4);/*❤背景颜色透明度*/
+ color: #f9f9f9;/*❤字*/
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  margin-top: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 200px;
+  transition: 0.2s;
+}
+.card .button1 span {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: top;
+}
+.card .button1:hover {
+  background: #3b70fc;/*❤聚焦颜色*/
+}
+/*######*/
+
+
+.card .button2 {
+  display: block;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.4);/*❤背景颜色透明度*/
+  color: #f9f9f9;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  margin-top: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 200px;
+  transition: 0.2s;
+}
+.card .button2 span {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: top;
+}
+.card .button2:hover {
+  background: #3b70fc;/*❤聚焦颜色*/
+}
+
+
+/*######*/
+
+.card .button3 {
+  display: block;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.4);/*❤背景颜色透明度*/
+  color: #f9f9f9;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  margin-top: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 200px;
+  transition: 0.2s;
+}
+.card .button3 span {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: top;
+}
+.card .button3:hover {
+  background: #3b70fc;/*❤聚焦颜色*/
+}
+
+
+/*######*/
+
+.card .button4 {
+  display: block;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.4);/*❤背景颜色透明度*/
+  color: #f9f9f9;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  margin-top: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 200px;
+  transition: 0.2s;
+}
+.card .button4 span {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: top;
+}
+.card .button4:hover {
+  background: #3b70fc;/*❤聚焦颜色*/
+}
+
