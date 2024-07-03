@@ -25,10 +25,19 @@ div#bg {
 
 html,
 body {
+  
   height: 100%;
+  background-image: url("preview1.jpg");/*背景图片 */
+  background-size: cover;/*使背景图片覆盖整个背景区域 */
+  background-repeat: no-repeat;/*防止背景图片重复 */
+  background-position: center center;/*将背景图片居中 */
+  background-attachment: fixed;/* 背景图片固定 */
+  overflow: hidden; /* 隐藏滚动条 */
+  
 }
 
 .container {
+  
   margin: auto;
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   line-height: 1.4;
@@ -37,7 +46,7 @@ body {
   align-items: center;
   /* background-color: #f9f9f9; */
   height: 100%;
-  /* background-image: url("preview1.jpg"); */
+
   /* background-size: cover; */
 
 }
@@ -60,12 +69,13 @@ h1{
   backdrop-filter:blur(5px)/*❤模糊*/
 }
 .card img {
-  background-color: #dddfe6;
-  height: 120px;
-  width: 120px;
+  background-color: #00000000;
+  height: 125px;
+  width: 125px;
   border-radius: 50%;
   margin: auto auto 15px;
   display: block;
+  border: 7px solid rgba(82, 82, 82, 0.5); /* 添加半透明的粗边框 */
 }
 .card h1 {
   font-size: 22px;
@@ -103,7 +113,7 @@ h1{
   vertical-align: top;
 }
 .card .button:hover {
-  background: #3b70fc;/*❤聚焦颜色*/
+  background: #47b79fd1;/*❤聚焦颜色*/
 }
 /*######*/
 
@@ -128,7 +138,7 @@ h1{
   vertical-align: top;
 }
 .card .button1:hover {
-  background: #3b70fc;/*❤聚焦颜色*/
+  background: #47b79fd1;/*❤聚焦颜色*/
 }
 /*######*/
 
@@ -153,7 +163,7 @@ h1{
   vertical-align: top;
 }
 .card .button2:hover {
-  background: #3b70fc;/*❤聚焦颜色*/
+  background: #47b79fd1;/*❤聚焦颜色*/
 }
 
 
@@ -179,7 +189,7 @@ h1{
   vertical-align: top;
 }
 .card .button3:hover {
-  background: #3b70fc;/*❤聚焦颜色*/
+  background: #47b79fd1;/*❤聚焦颜色*/
 }
 
 
@@ -205,6 +215,6 @@ h1{
   vertical-align: top;
 }
 .card .button4:hover {
-  background: #3b70fc;/*❤聚焦颜色*/
+  background: #47b79fd1;/*❤聚焦颜色*/
 }
 
