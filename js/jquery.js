@@ -1,3 +1,413 @@
+
+
+// 搜索框
+const searchEngine = {
+	// 当前搜索引擎current: 'https://www.google.com/search?q=',
+	init() {
+	  this.cacheElements();
+	  this.bindEvents();
+	  this.setDefaultEngine();
+	  this.initSuggestions();
+	},
+	// 缓存DOM元素
+	cacheElements() {
+	  this.searchInput = document.getElementById('searchInput');
+	  this.engineItems = document.querySelectorAll('.search-engine-menu li');
+	  this.engineMenu = document.querySelector('.search-engine-menu');
+	  this.menuIcon = document.querySelector('.search-menu-icon');
+	  this.clearButton = document.querySelector('.search-clear-icon');
+	  this.searchAction = document.querySelector('.search-action-icon');
+
+	  // 动态创建建议容器
+	  this.suggestionsContainer = document.createElement('div');
+	  this.suggestionsContainer.className = 'suggestions-container';
+	  document.querySelector('.search-container').appendChild(this.suggestionsContainer);
+	},
+	// 绑定事件
+	bindEvents() {
+	  this.searchInput.addEventListener('focus', () => this.updateClearButton());
+	  this.searchInput.addEventListener('blur', () => this.updateClearButton());
+	  this.searchInput.addEventListener('input', () => this.updateClearButton());
+	  
+	  // 搜索按钮点击
+	  this.searchAction.addEventListener('mousedown', (e) => {
+		e.preventDefault();
+		this.performSearch();
+	  });
+	  
+	  // 菜单图标点击
+	  this.menuIcon.addEventListener('mousedown', (e) => {
+		e.preventDefault();
+		this.toggleMenu();
+	  });
+
+	  this.clearButton.addEventListener('mousedown', (e) => {
+		e.preventDefault();
+		this.searchInput.value = '';
+		this.hideSuggestions();
+		this.searchInput.focus();
+		this.updateClearButton();
+	  });
+
+	  document.querySelector('.search-engine-menu ul').addEventListener('mousedown', (e) => {
+		if (e.target.tagName === 'LI') {
+		  e.preventDefault();
+		  this.switchEngine(e.target);
+		}
+	  });
+	  
+	   // 回车搜索
+	  this.searchInput.addEventListener('keypress', (e) => {
+		if (e.key === 'Enter') this.performSearch();
+	  });
+
+	  // 全局点击关闭菜单
+	  document.addEventListener('click', (e) => {
+		if (!this.engineMenu.contains(e.target) && !this.menuIcon.contains(e.target)) {
+		  this.closeMenu();
+		}
+	  });
+	  // 输入框失焦处理（重点修改）
+	  this.searchInput.addEventListener('blur', (e) => {
+		// 立即隐藏建议列表
+		this.hideSuggestions();
+		// 延迟关闭菜单（避免与点击事件冲突）
+		if (!e.relatedTarget || (!e.relatedTarget.closest('.search-menu-icon') && !e.relatedTarget.closest('.search-engine-menu'))) {
+		  setTimeout(() => this.closeMenu(), 10);
+		}
+	  });
+
+	   // 输入事件处理
+	  this.searchInput.addEventListener('input', this.handleInput.bind(this));
+
+	  // 建议点击处理（改为mousedown事件）
+	  this.suggestionsContainer.addEventListener('mousedown', (e) => {
+		if (e.target.classList.contains('suggestion-item')) {
+		  e.preventDefault();
+		 // 填充值并保持焦点   
+		  this.searchInput.value = e.target.dataset.value;
+		  this.searchInput.focus();
+		  this.performSearch();
+		}
+	  });
+	},
+
+	// 更新按钮状态方法
+	updateClearButton() {
+	  const hasContent = this.searchInput.value.trim().length > 0;
+	  const isFocused = document.activeElement === this.searchInput;
+	  
+	  if (hasContent && isFocused) {
+		this.clearButton.style.opacity = '1';
+		this.clearButton.style.pointerEvents = 'auto';
+	  } else {
+		this.clearButton.style.opacity = '0';
+		this.clearButton.style.pointerEvents = 'none';
+	  }
+	},
+
+	setDefaultEngine() {
+	  const savedEngine = localStorage.getItem('selectedEngine');
+	  if (savedEngine) {
+		let found = false;
+		this.engineItems.forEach((item) => {
+		  if (item.dataset.engine === savedEngine) {
+			item.classList.add('active');
+			this.current = savedEngine;
+			found = true;
+		  } else {
+			item.classList.remove('active');
+		  }
+		});
+		if (!found) {
+		  this.engineItems[0].classList.add('active');
+		  this.current = this.engineItems[0].dataset.engine;
+		}
+	  } else {
+		this.engineItems[0].classList.add('active');
+		this.current = this.engineItems[0].dataset.engine;
+	  }
+	},
+
+	// 切换搜索引擎
+	switchEngine(target) {
+	  this.hideSuggestions();
+	  this.engineItems.forEach((item) => item.classList.remove('active'));
+	  target.classList.add('active');
+	  this.current = target.dataset.engine;
+	  localStorage.setItem('selectedEngine', this.current);
+	  this.closeMenu();
+	  this.searchInput.focus();
+	},
+
+	// 执行搜索
+	performSearch() {
+	  this.hideSuggestions();
+	  const query = this.searchInput.value.trim();
+	  if (!query) return;
+
+	  const safeQuery = encodeURIComponent(query)
+		.replace(/%20/g, '+')
+		.replace(/'/g, '%27');
+
+	  let searchUrl;
+	  if (this.current.includes('baidu.com')) {
+		searchUrl = `${this.current}${safeQuery}&ie=utf-8`;
+	  } else {
+		searchUrl = `${this.current}${safeQuery}`;
+	  }
+
+	  window.open(searchUrl, '_blank');
+	  this.searchInput.value = '';
+	  this.updateClearButton();
+	  
+	  // 新增：退出聚焦状态
+	  this.searchInput.blur();
+	  this.updateClearButton();
+	},
+
+	// 初始化建议功能
+	initSuggestions() {
+	  this.suggestions = [];
+	  this.debounceTimeout = null;
+	},
+
+	// 输入处理函数（带防抖）
+	handleInput() {
+	  clearTimeout(this.debounceTimeout);
+	  this.debounceTimeout = setTimeout(() => {
+		const query = this.searchInput.value.trim();
+		if (query) this.fetchSuggestions(query);
+		else this.hideSuggestions();
+	  }, 300);
+	},
+
+	// 获取Google建议
+	fetchSuggestions(query) {
+	  const script = document.createElement('script');
+	  const callbackName = `jsonp_${Date.now()}`;
+
+	  window[callbackName] = (data) => {
+		this.processSuggestions(data);
+		delete window[callbackName];
+		document.body.removeChild(script);
+	  };
+
+	  const url = new URL('https://suggestqueries.google.com/complete/search');
+	  url.searchParams.set('q', query);
+	  url.searchParams.set('client', 'chrome');
+	  url.searchParams.set('jsonp', callbackName);
+
+	  script.src = url.toString();
+	  document.body.appendChild(script);
+	},
+
+	// 处理建议数据
+	processSuggestions(data) {
+	  this.suggestions = data[1] || [];
+	  this.showSuggestions(data[0]);
+	},
+
+	// 显示建议列表
+	showSuggestions(query) {
+	  this.suggestionsContainer.innerHTML = '';
+	  this.suggestions.forEach((text) => {
+		const item = document.createElement('div');
+		item.className = 'suggestion-item';
+		item.dataset.value = text;
+
+		 // 高亮匹配部分
+		const matchIndex = text.toLowerCase().indexOf(query.toLowerCase());
+		if (matchIndex >= 0) {
+		  item.innerHTML = [
+			text.slice(0, matchIndex),
+			`<span class="suggestion-highlight">${text.slice(matchIndex, matchIndex + query.length)}</span>`,
+			text.slice(matchIndex + query.length),
+		  ].join('');
+		} else {
+		  item.textContent = text;
+		}
+
+		this.suggestionsContainer.appendChild(item);
+	  });
+
+	  this.suggestionsContainer.style.display = this.suggestions.length ? 'block' : 'none';
+	},
+
+// 隐藏建议列表
+	hideSuggestions() {
+	  this.suggestionsContainer.style.display = 'none';
+	},
+
+	// 切换菜单显示状态
+	toggleMenu() {
+	  this.engineMenu.classList.toggle('open');
+	},
+
+	// 关闭菜单
+	closeMenu() {
+	  this.engineMenu.classList.remove('open');
+	},
+  };
+
+  // 初始化
+  searchEngine.init();
+
+
+
+
+
+
+//自定义书签
+function updateEditUI() {
+	const editMode = JSON.parse(localStorage.getItem('editMode')) || false;
+	document.querySelector('#toggleEditBtn i').className = editMode ? 'iconfont icon-baocun' : 'iconfont icon-xiugai';
+	const visibility = editMode ? 'block' : 'none';
+	document.getElementById('addBookmarkBtn').style.display = visibility;
+	document.getElementById('exportConfigBtn').style.display = visibility;
+	document.getElementById('importConfigBtn').style.display = visibility;
+  }
+
+  function loadBookmarks() {
+	const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+	const editMode = JSON.parse(localStorage.getItem('editMode')) || false;
+	const list = document.getElementById('bookmarkList');
+	list.innerHTML = '';
+	bookmarks.forEach((bookmark, index) => {
+	  const div = document.createElement('div');
+	  div.className = 'bookmark-item';
+	  div.innerHTML = `
+		<a target="_blank" href="${bookmark.url}" class="bookmark-link"><div class="title">${bookmark.title}</div></a>
+		${editMode ? `<button class="options-btn" onclick="showOptions(${index}, event)">⋮</button>` : ''}
+	  `;
+	  list.appendChild(div);
+	});
+  }
+
+  function addBookmark() {
+	const title = prompt("请输入书签标题：");
+	const url = prompt("请输入书签网址：");
+	if (title && url) {
+	  const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+	  bookmarks.push({ title, url });
+	  localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+	  loadBookmarks();
+	}
+  }
+
+  function deleteBookmark(index) {
+	const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+	bookmarks.splice(index, 1);
+	localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+	loadBookmarks();
+  }
+
+  function modifyBookmark(index) {
+	const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+	const bookmark = bookmarks[index];
+	const newTitle = prompt("请输入新的书签标题：", bookmark.title);
+	const newURL = prompt("请输入新的书签网址：", bookmark.url);
+	if (newTitle && newURL) {
+	  bookmarks[index] = { title: newTitle, url: newURL };
+	  localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+	  loadBookmarks();
+	}
+  }
+
+  function toggleEdit() {
+	const editMode = !(JSON.parse(localStorage.getItem('editMode')) || false);
+	localStorage.setItem('editMode', JSON.stringify(editMode));
+	updateEditUI();
+	loadBookmarks();
+  }
+
+  function exportConfig() {
+	const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+	const editMode = JSON.parse(localStorage.getItem('editMode')) || false;
+	const config = { bookmarks, editMode };
+	const blob = new Blob([JSON.stringify(config, null, 2)], { type: "application/json" });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = 'Bookmark.json';
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+	URL.revokeObjectURL(url);
+  }
+
+  function triggerImport() { document.getElementById('importInput').click(); }
+
+  document.getElementById('importInput').addEventListener('change', function (e) {
+	const file = e.target.files[0];
+	if (!file) return;
+	const reader = new FileReader();
+	reader.onload = function (event) {
+	  try {
+		const config = JSON.parse(event.target.result);
+		if (config.bookmarks && config.editMode !== undefined) {
+		  localStorage.setItem('bookmarks', JSON.stringify(config.bookmarks));
+		  localStorage.setItem('editMode', JSON.stringify(config.editMode));
+		  updateEditUI();
+		  loadBookmarks();
+		  alert("配置导入成功！");
+		} else {
+		  alert("配置格式不正确！");
+		}
+	  } catch (error) {
+		alert("解析 JSON 出错，请检查文件格式！");
+	  }
+	};
+	reader.readAsText(file);
+	e.target.value = "";
+  });
+
+  function showOptions(index, event) {
+	event.stopPropagation();
+	removeOptionsMenu();
+	const btnRect = event.target.closest('button').getBoundingClientRect();
+	const menu = document.createElement('div');
+	menu.className = 'options-menu';
+	menu.style.left = `${btnRect.left}px`;
+	menu.style.top = `${btnRect.bottom + 4}px`;
+
+	const modifyBtn = document.createElement('button');
+	modifyBtn.textContent = '✎ 修改网站';
+	modifyBtn.onclick = () => { modifyBookmark(index); removeOptionsMenu(); };
+
+	const deleteBtn = document.createElement('button');
+	deleteBtn.textContent = '🗑 删除网站';
+	deleteBtn.onclick = () => { deleteBookmark(index); removeOptionsMenu(); };
+
+	menu.appendChild(modifyBtn);
+	menu.appendChild(deleteBtn);
+	document.body.appendChild(menu);
+
+	setTimeout(() => {
+	  const rect = menu.getBoundingClientRect();
+	  if (rect.right > window.innerWidth) {
+		menu.style.left = `${window.innerWidth - rect.width - 8}px`;
+	  }
+	}, 0);
+
+	document.addEventListener('click', removeOptionsMenu);
+  }
+
+  function removeOptionsMenu() {
+	const existingMenu = document.querySelector('.options-menu');
+	if (existingMenu) {
+	  existingMenu.remove();
+	  document.removeEventListener('click', removeOptionsMenu);
+	}
+  }
+
+  window.onload = function () { updateEditUI(); loadBookmarks(); };
+
+
+
+
+
+//搜索框
 // 从 localStorage 中读取存储的搜索引擎
 const savedEngine = localStorage.getItem('searchEngine') || 'https://www.google.com/search';
 
@@ -140,7 +550,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
  // 页脚自动更新时间
  // 获取当前日期
  const currentDate = new Date();
- const currentYear = currentDate.getFullYear(); // 当前年份
  const currentMonth = currentDate.getMonth() + 1; // 当前月份（从 0 开始，所以 +1）
  const currentDay = currentDate.getDate(); // 当前日期
 
@@ -154,7 +563,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
  const formattedDay = currentDay.toString().padStart(2, '0');
 
  // 创建超链接部分
- const footerText = `© 2022-${currentYear} <a href="https://bearcloney.eu.org/" target="_blank">Bear cloney</a>. All Rights Reserved.  已运行${totalDaysSinceLaunch}天<br><b>۰ 性 趣 使 然 , 臻 于 至 善 ۰</b>`;
+ const footerText = `本站已运行${totalDaysSinceLaunch}天
+ ۰ 页面浏览量 <span id="vercount_value_page_pv">Loading</span>
+ ۰ 网站总访问量 <span id="vercount_value_site_pv">Loading</span>
+ ۰ 网站访客数 <span id="vercount_value_site_uv">Loading</span>`;
 
  // 在页脚插入动态文本
  document.getElementById('footer-text').innerHTML = footerText;
